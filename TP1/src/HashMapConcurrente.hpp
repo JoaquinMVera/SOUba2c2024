@@ -31,7 +31,7 @@ class HashMapConcurrente {
     //[0....26]
     // [0] = [Arbol, 2], [ACASO, 4]...
     // [1] = [barco, 2]
-    mutex* mutex_por_letras[HashMapConcurrente::cantLetras];
+    mutex mutex_por_letras[HashMapConcurrente::cantLetras];
     static unsigned int hashIndex(std::string clave);
 };
 

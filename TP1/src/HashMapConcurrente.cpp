@@ -14,8 +14,8 @@ using namespace std;
 HashMapConcurrente::HashMapConcurrente() {
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
         tabla[i] = new ListaAtomica<hashMapPair>();
-        mutex_por_letras[i] = new mutex;
     }
+    
 }
 
 
@@ -26,8 +26,7 @@ unsigned int HashMapConcurrente::hashIndex(std::string clave) {
 void HashMapConcurrente::incrementar(std::string clave) {
     int index = hashIndex(clave);
 
-
-    std::lock_guard<std::mutex> lock(*mutex_por_letras[index]);
+    mutex_por_letras[index].lock();
 
     auto iteradorPrincipio = tabla[index]->begin();
     auto final = tabla[index]->end();
@@ -48,6 +47,8 @@ void HashMapConcurrente::incrementar(std::string clave) {
     } else {
         (*iteradorPrincipio).second++;
     }
+
+    mutex_por_letras[index].unlock();
 
 }
 
@@ -82,8 +83,7 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 
     //aca entinedo entoces que podemos hacer mutex y listo?
     //preguntar
-        std::lock_guard<std::mutex> lock(*mutex_por_letras[index]);
-
+    mutex_por_letras[index].lock();
 
     auto iteradorPrincipio = tabla[index]->begin();
     auto final = tabla[index]->end();
@@ -101,6 +101,8 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
     } else {
        result = (*iteradorPrincipio).second;
     }
+
+    mutex_por_letras[index].unlock();
 
     return result;
     
