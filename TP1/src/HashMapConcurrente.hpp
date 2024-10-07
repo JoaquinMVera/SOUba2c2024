@@ -25,6 +25,7 @@ class HashMapConcurrente {
     float promedio();
 
 
+
  private:
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
     //[0....26]

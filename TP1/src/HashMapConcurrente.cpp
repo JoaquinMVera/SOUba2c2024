@@ -15,9 +15,9 @@ HashMapConcurrente::HashMapConcurrente() {
     for (unsigned int i = 0; i < HashMapConcurrente::cantLetras; i++) {
         tabla[i] = new ListaAtomica<hashMapPair>();
         mutex_por_letras[i] = new mutex;
-        mutex_por_letras[i]->unlock();
     }
 }
+
 
 unsigned int HashMapConcurrente::hashIndex(std::string clave) {
     return (unsigned int)(clave[0] - 'a');
@@ -27,7 +27,7 @@ void HashMapConcurrente::incrementar(std::string clave) {
     int index = hashIndex(clave);
 
 
-    mutex_por_letras[index]->lock();
+    std::lock_guard<std::mutex> lock(*mutex_por_letras[index]);
 
     auto iteradorPrincipio = tabla[index]->begin();
     auto final = tabla[index]->end();
@@ -35,7 +35,7 @@ void HashMapConcurrente::incrementar(std::string clave) {
     //final = -> ] ya me fui del array
     //lockear desde aca
 
-    while(iteradorPrincipio != final || (*iteradorPrincipio).first != clave ) {
+    while(iteradorPrincipio != final && (*iteradorPrincipio).first != clave ) {
         iteradorPrincipio++;
     }
 
@@ -49,7 +49,6 @@ void HashMapConcurrente::incrementar(std::string clave) {
         (*iteradorPrincipio).second++;
     }
 
-    mutex_por_letras[index]->unlock();
 }
 
 std::vector<std::string> HashMapConcurrente::claves() {
@@ -83,11 +82,13 @@ unsigned int HashMapConcurrente::valor(std::string clave) {
 
     //aca entinedo entoces que podemos hacer mutex y listo?
     //preguntar
-    
+        std::lock_guard<std::mutex> lock(*mutex_por_letras[index]);
+
+
     auto iteradorPrincipio = tabla[index]->begin();
     auto final = tabla[index]->end();
 
-    while(iteradorPrincipio != final || (*iteradorPrincipio).first != clave ) {
+    while(iteradorPrincipio != final && (*iteradorPrincipio).first != clave ) {
         iteradorPrincipio++;
     }
 

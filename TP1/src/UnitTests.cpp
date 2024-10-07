@@ -40,6 +40,7 @@ LT_BEGIN_TEST(TestsEjercicio1, InsertarAgregaEnOrden)
     l.insertar(2);
     l.insertar(1);
     LT_CHECK_EQ(l.longitud(), 4);
+
     LT_CHECK_EQ(l[0], 1);
     LT_CHECK_EQ(l[1], 2);
     LT_CHECK_EQ(l[2], 3);

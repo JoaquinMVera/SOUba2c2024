@@ -35,15 +35,11 @@ class ListaAtomica {
         //asignar lo que esta en la cabeza a una variable
 
         Nodo* cabeza_vieja = _cabeza.load();
-
-        //if cabeza == cabeza_vieja then cabeza = nuevo_nodo else cabeza_vieja = cabeza
-        while(!_cabeza.compare_exchange_weak(cabeza_vieja,nodo_nuevo)) {
-            //tengo la cabeza actualizada?
-            //-> cabeza = nuevo_nodo
-            // no la tengo actualiza
-            //cabeza vieja = cabeza 
-            nodo_nuevo->_siguiente= cabeza_vieja;
-        }
+        do {
+            nodo_nuevo->_siguiente = cabeza_vieja;
+        } while (!_cabeza.compare_exchange_weak(cabeza_vieja,nodo_nuevo));
+        
+        
         
     }
 
