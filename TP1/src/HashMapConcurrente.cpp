@@ -20,7 +20,8 @@ HashMapConcurrente::HashMapConcurrente() {
 
 
 unsigned int HashMapConcurrente::hashIndex(std::string clave) {
-    return (unsigned int)(clave[0] - 'a');
+    //fixed from original templateg
+    return (unsigned int)(tolower(clave[0]) - 'a');
 }
 
 void HashMapConcurrente::incrementar(std::string clave) {
@@ -79,7 +80,6 @@ std::vector<std::string> HashMapConcurrente::claves() {
 
 unsigned int HashMapConcurrente::valor(std::string clave) {
     int index = hashIndex(clave);
-
 
     //aca entinedo entoces que podemos hacer mutex y listo?
     //preguntar
