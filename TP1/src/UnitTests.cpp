@@ -161,6 +161,20 @@ LT_BEGIN_TEST(TestsEjercicio3, PromedioEsCorrecto)
     LT_CHECK_EQ(actual, 3);
 LT_END_TEST(PromedioEsCorrecto)
 
+LT_BEGIN_TEST(TestsEjercicio3, PromedioParaleloEsCorrecto)
+    hM.incrementar("Heladera");
+    hM.incrementar("Heladera");
+    hM.incrementar("Heladera");
+    hM.incrementar("Heladera");
+    hM.incrementar("Zicroondas");
+    hM.incrementar("Zicroondas");
+
+    float actual = hM.promedioParalelo(10000);
+    std::cout << "Promedio Paralelo es: " << actual << std::endl;
+    LT_CHECK_EQ(actual, 3);
+LT_END_TEST(PromedioParaleloEsCorrecto)
+
+
 // Completar TEST para caso concurrente
 
 LT_BEGIN_SUITE(TestsEjercicio4)

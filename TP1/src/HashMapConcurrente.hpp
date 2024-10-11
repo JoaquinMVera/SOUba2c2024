@@ -22,11 +22,13 @@ class HashMapConcurrente {
     std::vector<std::string> claves();
     unsigned int valor(std::string clave);
 
+    float promedioParalelo(unsigned int cantThreads);
     float promedio();
 
 
 
  private:
+     void calculoThread(atomic<int> &listaActual, mutex *mutexes,  ListaAtomica<hashMapPair> **tabla_thread, vector<pair<int,int>> *resultados_thread);
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
     //[0....26]
     // [0] = [Arbol, 2], [ACASO, 4]...
