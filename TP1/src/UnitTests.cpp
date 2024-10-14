@@ -4,6 +4,8 @@
 #include "../src/ListaAtomica.hpp"
 #include "../src/HashMapConcurrente.hpp"
 #include "../src/CargarArchivos.hpp"
+#include <thread>
+
 
 // Tests Ejercicio 1
 
@@ -169,7 +171,7 @@ LT_BEGIN_TEST(TestsEjercicio3, PromedioParaleloEsCorrecto)
     hM.incrementar("Zicroondas");
     hM.incrementar("Zicroondas");
 
-    float actual = hM.promedioParalelo(10000);
+    float actual = hM.promedioParalelo(10);
     std::cout << "Promedio Paralelo es: " << actual << std::endl;
     LT_CHECK_EQ(actual, 3);
 LT_END_TEST(PromedioParaleloEsCorrecto)
@@ -211,6 +213,100 @@ LT_BEGIN_TEST(TestsEjercicio4, CargarMultiplesArchivosFuncionaDosThreads)
     LT_CHECK_EQ(hM.valor("Microondas"), 4);
     LT_CHECK_EQ(hM.claves().size(), 12);
 LT_END_TEST(CargarMultiplesArchivosFuncionaDosThreads)
+
+
+LT_BEGIN_SUITE(TestsEjercicio1Concurrente)
+
+ListaAtomica<int> l;
+
+void set_up()
+{
+}
+
+void tear_down()
+{
+}
+LT_END_SUITE(TestsEjercicio1Concurrente)
+
+
+LT_BEGIN_TEST(TestsEjercicio1Concurrente, MultiplesThreadsInsertanCorrectamenteConcurrentemente)
+    const int cant_threads = 1000;
+    const int valor_a_insertar = 712;
+
+    vector<thread> threads;
+    const int cant_de_reps = 5;
+        
+    for (int i = 0; i < cant_threads; ++i) {
+        threads.emplace_back([&]() {
+            l.insertar(valor_a_insertar);
+        });
+
+    }
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    LT_CHECK_EQ(l.longitud() , cant_threads);
+
+    for (int i = 0; i < l.longitud(); ++i) {
+        LT_CHECK_EQ(l[i], valor_a_insertar);
+    }
+
+    
+LT_END_TEST(MultiplesThreadsInsertanCorrectamenteConcurrentemente)
+
+//testear que si dos procesos apuntan al mismo elemento, nunca haya falsas nuevas inserciones/ el valor sea correcto despues de los dos
+//testear que si dos procesos apuntan a diferentes elementos, no estan bloqueados
+//testear que si dos procesos apuntan al mismo elemento, el valor se incremente y no se llene
+//ClavesEsCorrectoTrasDosInsercionesMismaPalabra concurrente
+
+
+LT_BEGIN_SUITE(TestsEjercicio2Concurrente)
+
+HashMapConcurrente hM;
+
+void set_up()
+{
+}
+
+void tear_down()
+{
+}
+LT_END_SUITE(TestsEjercicio2Concurrente)
+
+LT_BEGIN_TEST(TestsEjercicio2Concurrente, MultiplesThreadsIncrementanClaveCorrectamente)
+    const int cant_threads = 1000;
+    string clave_a_insertar = "Compu";
+
+    vector<thread> threads;
+    const int cant_de_reps = 5;
+        
+    for (int i = 0; i < cant_threads; ++i) {
+        threads.emplace_back([&]() {
+            hM.incrementar(clave_a_insertar);
+        });
+
+    }
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    vector<string> clavesActuales = hM.claves();
+    LT_CHECK_EQ(clavesActuales.size(), 1);
+    LT_CHECK(std::find(clavesActuales.begin(), clavesActuales.end(), "Compu") != clavesActuales.end());
+
+    LT_CHECK_EQ(hM.valor(clave_a_insertar), cant_threads);
+
+LT_END_TEST(MultiplesThreadsIncrementanClaveCorrectamente)
+
+//preguntar, existe manera fisica de hacer esto?
+//Preguntar que onda con los tests, que es lo que esperan que hagamos, que intentan que mostremos
+//y como podemos demostrar concurrencia con test
+//preguntar acerca de la mediana y todo eso, que se supone que esperan mas que
+//igual que el promedio 
+
+
+
 
 // Ejecutar tests
 LT_BEGIN_AUTO_TEST_ENV()

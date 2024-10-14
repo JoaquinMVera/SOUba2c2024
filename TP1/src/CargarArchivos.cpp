@@ -4,9 +4,14 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <thread>
+
 
 #include "CargarArchivos.hpp"
 
+using namespace std;
+
+//esto deberia ser cargarCompra
 int cargarArchivo(
     HashMapConcurrente &hashMap,
     std::string filePath
@@ -23,6 +28,8 @@ int cargarArchivo(
     }
     while (file >> palabraActual) {
         // Completar (Ejercicio 4)
+        //lo meto en el hashmap y gg
+        hashMap.incrementar(palabraActual);
         cant++;
     }
     // Cierro el archivo.
@@ -36,12 +43,37 @@ int cargarArchivo(
 }
 
 
+void cargaThread(
+    atomic<int> &archivoActual,vector<string> &filePaths,HashMapConcurrente &hashMap
+
+) {
+        for (int index = archivoActual.fetch_add(1); index < filePaths.size(); index = archivoActual.fetch_add(1)) {
+            cargarArchivo(hashMap, filePaths[index]);
+        }
+
+}
+
 void cargarMultiplesArchivos(
     HashMapConcurrente &hashMap,
     unsigned int cantThreads,
     std::vector<std::string> filePaths
 ) {
-    // Completar (Ejercicio 4)
+    //tenemos los archivos
+    //tenemos la cantidad de threads
+    // lo mismo que promedio paralelo, pero en este caso no hay mutex porque el hasmap es concurrente
+
+    vector<thread> threads;
+    atomic<int> archivo_actual(0);
+
+    for (int i = 0; i < cantThreads;i++) {
+        threads.emplace_back(cargaThread, ref(archivo_actual), ref(filePaths),ref(hashMap));
+    }
+
+    for (auto &t:threads) {
+        t.join();
+    }   
 }
+
+
 
 #endif

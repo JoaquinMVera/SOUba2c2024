@@ -34,6 +34,7 @@ void HashMapConcurrente::incrementar(std::string clave) {
 
     //final = -> ] ya me fui del array
     //lockear desde aca
+    //->
 
     while(iteradorPrincipio != final && (*iteradorPrincipio).first != clave ) {
         iteradorPrincipio++;
@@ -180,7 +181,7 @@ float HashMapConcurrente::promedioParalelo(unsigned int cantThreads){
         //CANTIDAD DE PRODUCTOS
         sum += res.second;
         //CANTIDAD DE TIPOS DE PRODUCTO
-        count += res.first;
+        count += res.first;            
     }
 
     return (sum/count);

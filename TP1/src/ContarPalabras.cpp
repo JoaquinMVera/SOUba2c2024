@@ -28,10 +28,10 @@ int main(int argc, char **argv) {
 
     HashMapConcurrente hashMap{}; // = HashMapConcurrente();
     cargarMultiplesArchivos(hashMap, cantThreadsLectura, filePaths);
-    // Completar
-    // auto promedio = hashMap.promedioParalelo(cantThreadsMaximo);
 
-    // std::cout << promedio << std::endl;
+    auto promedio = hashMap.promedioParalelo(cantThreadsMaximo);
+
+    std::cout << promedio << std::endl;
 
     return 0;
 }
