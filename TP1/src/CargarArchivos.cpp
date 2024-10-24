@@ -26,8 +26,8 @@ int cargarArchivo(
         std::cerr << "Error al abrir el archivo '" << filePath << "'" << std::endl;
         return -1;
     }
-    while (file >> palabraActual) {
-        // Completar (Ejercicio 4)
+    //Este while fue modificado por problemas parseando
+    while (getline(file, palabraActual)) {
         //lo meto en el hashmap y gg
         hashMap.incrementar(palabraActual);
         cant++;

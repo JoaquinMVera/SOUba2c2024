@@ -1,0 +1,71 @@
+Teclado Ergonomico, 57
+Purificador de Aire, 58
+Bombilla Inteligente, 80
+Pendrive USB, 59
+Proyector Portatil, 86
+Refrigerador Inteligente, 47
+Monitor, 98
+Camara Web, 31
+Sistema de Seguridad, 58
+Televisor 4K, 150
+Auriculares Gaming, 50
+Adaptador Bluetooth, 59
+Cortinas Inteligentes, 50
+Patinete Electrico, 47
+Horno Inteligente, 41
+Hub de Automacion, 34
+Termostato Inteligente, 77
+Interruptor de Luz Inteligente, 90
+Auriculares con Cancelacion de Ruido, 48
+Ordenador de Sobremesa, 160
+Proyector, 37
+Smartphone, 177
+Altavoz Inteligente, 148
+Protector de Pantalla, 71
+Escaner Portatil, 56
+Cargador USB, 68
+Impresora Laser, 75
+Base de Refrigeracion para Portatil, 41
+USB-C Hub, 49
+Camara de Accion, 84
+Freidora de Aire, 91
+Impresora 3D, 81
+Teclado Gaming, 55
+Tablet, 170
+SSD Externo, 48
+Ventilador Inteligente, 62
+Campana Extractora Inteligente, 45
+Detector de Humo Inteligente, 80
+Cargador Solar, 52
+Gimbal para Smartphone, 75
+Kettle Inteligente, 24
+Altavoz Portatil, 75
+Timbre con Video, 88
+Raton Inalambrico, 71
+Router WiFi, 165
+Hervidor Inteligente, 45
+Enchufe Inteligente, 61
+Soporte para Portatil, 58
+Disco Duro Externo, 101
+Laptop, 183
+Alfombrilla de Raton, 77
+Tarjeta Grafica, 165
+Camara de Seguridad, 38
+Lavadora Inteligente, 85
+Cargador Inalambrico, 90
+Auriculares Bluetooth, 131
+Camara de Vigilancia Inalambrica, 43
+Controlador de Juegos, 85
+Bicicleta Electrica, 64
+Aspiradora Robot, 72
+Teclado Mecanico, 64
+Casco de Realidad Virtual, 71
+Dron, 57
+Smartwatch, 164
+Bateria Externa, 33
+Cerradura Inteligente, 89
+Consola de Videojuegos, 159
+Humidificador Inteligente, 71
+Tarjeta SD, 33
+Funda para Portatil, 55
+Panel Solar, 88
