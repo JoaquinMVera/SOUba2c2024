@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def graficar_resultados(archivo):
+def graficar_resultados(archivo, salida):
     threads = []
     tiempos = []
     
@@ -25,10 +25,10 @@ def graficar_resultados(archivo):
     plt.title('Tiempo de insercion para distintos threads \n')
     
     # Devolvemos el grafico
-    plt.show()
+    plt.savefig(salida, format='jpg', dpi=300)
 
 # Ejemplo de uso
 resultadoExperimento1 = './resultados/resultadoExperimento1.txt'
 resultadoExperimento2 = './resultados/resultadoExperimento2.txt'
-graficar_resultados(resultadoExperimento1)
-graficar_resultados(resultadoExperimento2)
+graficar_resultados(resultadoExperimento1, 'experimento1.jpg')
+graficar_resultados(resultadoExperimento2, 'experimento2.jpg')
