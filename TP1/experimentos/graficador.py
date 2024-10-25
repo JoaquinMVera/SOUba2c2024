@@ -17,12 +17,22 @@ def graficar_resultados(archivo, salida):
     
     # Aca ya graficamos!
     plt.figure(figsize=(10, 6))
-    plt.plot(threads, tiempos, marker='x', linestyle='-', color='b')
+
+    if(salida == 'experimento1.jpg'):
+        plt.plot(threads, tiempos, marker='x', linestyle='-', color='r')
+    else:
+        plt.plot(threads, tiempos, marker='x', linestyle='-', color='b')
+    
 
     # Etiquetas y titulos para esto
     plt.xlabel('Cantidad de Threads')
     plt.ylabel('Tiempo (ms)')
-    plt.title('Tiempo de insercion para distintos threads \n')
+
+    if(salida == 'experimento1.jpg'):
+        plt.title('Tiempo de calculo del promedio paralelo para distintos threads \n')
+    else:
+         plt.title('Tiempo de insercion para distintos threads \n')
+
     
     # Devolvemos el grafico
     plt.savefig(salida, format='jpg', dpi=300)

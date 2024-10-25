@@ -10,14 +10,14 @@
 typedef std::chrono::high_resolution_clock Clock;
 using namespace std;
 
-const string ARCHIVO_LECTURA = "../../data/data";
+const string ARCHIVO_LECTURA = "../../data/exp2/data";
 const string EXTENSION_ARCHIVO_LECTURA= ".txt";
 const string ARCHIVO_TESTER = "./stressTest.txt";
 const string ARCHIVO_SALIDA = "../resultados/resultadoExperimento2.txt";
 const int cantArchivos = 3;
 
 //La funcion para agarrar testear el hashmap y el archivo tester y ver que coincidan
-bool testearHashMap(const string& archivoTester, HashMapConcurrente& hashmap) {
+void testearHashMap(const string& archivoTester, HashMapConcurrente& hashmap) {
     ifstream inFile(archivoTester);
     string linea;
 
@@ -31,7 +31,7 @@ bool testearHashMap(const string& archivoTester, HashMapConcurrente& hashmap) {
         // Leemos la linea hasta la proxima coma, asi tenemos la calve
         if (!getline(ss, clave, ',')) {
             cerr << "Error al parsear la clave en la línea: " << linea << endl;
-            return false;
+            exit(EXIT_FAILURE);
         }
 
         //guardamos en valor lo que quedaba despues!
@@ -43,11 +43,10 @@ bool testearHashMap(const string& archivoTester, HashMapConcurrente& hashmap) {
         //comparamos, si es verdad esto, es que hay algo mal
         if (valorEnHashMap != valor) {
             cout << "Discrepancia encontrada: " << clave << " (Esperado: " << valor << ", Actual: " << valorEnHashMap << ")" << endl;
-            return false;
+            exit(EXIT_FAILURE);
         }
     }
-    cout << "Verificación completada con éxito. Todos los valores coinciden." << endl;
-    return true;
+    //cout << "Verificación completada con éxito. Todos los valores coinciden." << endl;
 }
 
 double realizarExperimentosConCantThreads(int threads) {
@@ -84,7 +83,7 @@ int main(int argc, char* argv[]) {
     ofstream outFile(ARCHIVO_SALIDA);
 
     
-    for (int i = 1; i < 50; i++)
+    for (int i = 1; i < 11; i++)
     {
         double duracion = realizarExperimentosConCantThreads(i); 
         string nombreExperimento = "Experiento 2. Cantidad de Threads: " + to_string(i) + "," + to_string(duracion);

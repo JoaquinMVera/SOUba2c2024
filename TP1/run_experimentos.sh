@@ -11,8 +11,8 @@ GRAFICADOR_DIR="$CURRENT_DIR/experimentos"
 echo "Generando archivos tester..."
 
 cd "$DIR_SCRIPTS" || { echo "Error: No se puede acceder al directorio $DIR_SCRIPTS"; exit 1; }
-awk -f contar-palabras.awk ../data/corpus.txt > "$DIR_EXP1/corpusTester.txt"
 awk -f contar-palabras-multifile.awk ../data/data1.txt ../data/data2.txt ../data/data3.txt > "$DIR_EXP2/stressTester.txt"
+awk -f contar-palabras-multifile.awk ../data/data1_processed.txt ../data/data2_processed.txt ../data/data3_processed.txt > "$DIR_EXP1/promedioTester.txt"
 echo "Archivos tester generados."
 
 # Paso 2: Compilar los experimentos

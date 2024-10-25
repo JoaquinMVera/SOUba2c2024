@@ -38,9 +38,7 @@ class ListaAtomica {
         Nodo* cabeza_vieja = _cabeza.load();
         do {
             nodo_nuevo->_siguiente = cabeza_vieja;
-        } while (!_cabeza.compare_exchange_weak(cabeza_vieja,nodo_nuevo));
-        // TODO: esto ó agarramos y nos hacemos un mutex
-        
+        } while (!_cabeza.compare_exchange_weak(cabeza_vieja,nodo_nuevo));        
         
     }
 
