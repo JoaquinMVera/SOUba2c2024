@@ -10,8 +10,8 @@
 Primero, generar los archivos "tester", que no son otra cosa que archivos con estilo csv tales que estamos "contando" la cantidad de veces que se repite una linea (que deberia ser el valor en nuestro hashmap).
 Una vez parados sobre la carpeta scripts, correr:
 
-- `awk -f contar-palabras.awk ../data/corpus.txt > ../experimentos/exp1/corpusTester.txt`
-- `awk -f contar-palabras-multifile.awk ../data/data1.txt ../data/data2.txt ../data/data3.txt > ../experimentos/exp2/stressTester.txt`
+- `awk -f contar-palabras-multifile.awk ../data/exp2/data1.txt ../data/exp2/data2.txt ../data/exp2/data3.txt > ../experimentos/exp2/stressTester.txt`
+- `awk -f contar-palabras-multifile.awk ../data/exp1/data1_processed.txt ../data/exp1/data2_processed.txt ../data/exp1/data3_processed.txt > ../experimentos/exp1/promedioTester.txt`
 
 Una vez hecho esto, ya tenemos toda la informacion para constrastar que los hashmap se hayan realizado correctamente!
 
@@ -27,7 +27,7 @@ y luego, parados dentro de las respectivas carpetas, ejecutarlos como
 - `./exp`
 - `./exp2`
 
-Van a ver ahi que saltan muchos logs de verificaciones, porque para cada cantidad de threads hacemos 10 repeticiones y devolvemos un promedio, pero en la carpeta
+Luego, en la carpeta:
 
 `/experimentos/resultados`
 
@@ -44,3 +44,4 @@ Luego, tener en cuenta que por distintos equipos, y distintas maquinas, es posib
 Adicionalmente, porque nos dimos cuenta que correr los experimentos puede ser medio handy, dejamos un scripsito que hace todo lo anteriormente mencionado!
 
 `sh run_experimentos.sh`
+`sh clean_experimentos.sh`
