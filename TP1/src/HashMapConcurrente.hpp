@@ -30,10 +30,9 @@ class HashMapConcurrente {
  private:
      void calculoThread(atomic<int> &listaActual, mutex *mutexes,  ListaAtomica<hashMapPair> **tabla_thread, vector<pair<int,int>> *resultados_thread);
     ListaAtomica<hashMapPair> *tabla[HashMapConcurrente::cantLetras];
-    //[0....26]
-    // [0] = [Arbol, 2], [ACASO, 4]...
-    // [1] = [barco, 2]
-    mutex mutex_por_letras[HashMapConcurrente::cantLetras];
+    
+    //Los mutex para cada bucket!
+    mutex mutex_por_bucket[HashMapConcurrente::cantLetras];
     static unsigned int hashIndex(std::string clave);
 };
 

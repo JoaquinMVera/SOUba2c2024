@@ -233,9 +233,7 @@ LT_BEGIN_TEST(TestsEjercicio1Concurrente, MultiplesThreadsInsertanCorrectamenteC
     const int cant_threads = 1000;
     const int valor_a_insertar = 712;
 
-    vector<thread> threads;
-    const int cant_de_reps = 5;
-        
+    vector<thread> threads;        
     for (int i = 0; i < cant_threads; ++i) {
         threads.emplace_back([&]() {
             l.insertar(valor_a_insertar);
@@ -279,7 +277,6 @@ LT_BEGIN_TEST(TestsEjercicio2Concurrente, MultiplesThreadsIncrementanClaveCorrec
     string clave_a_insertar = "Compu";
 
     vector<thread> threads;
-    const int cant_de_reps = 5;
         
     for (int i = 0; i < cant_threads; ++i) {
         threads.emplace_back([&]() {
