@@ -38,6 +38,18 @@ class ListaAtomica {
         Nodo* cabeza_vieja = _cabeza.load();
         do {
             nodo_nuevo->_siguiente = cabeza_vieja;
+
+            //Intentamos actualizar atomicamente la cabeza de la lista con el nodo_nuevo
+            //Lo hacemos en un while, porque podria pasar que otros threads la modifiquen concurrentemente
+
+            //el pseudocodigo de esta instruccion es algo del estilo:
+            //if cabeza == cabeza_vieja
+            //  cabeza= nodo_nuevo
+            //  break
+            //else:
+            //  cabeza_vieja=cabeza
+            //  continue
+            //pero siendo cabeza una variable atomica, que compartimos con otros threads
         } while (!_cabeza.compare_exchange_weak(cabeza_vieja,nodo_nuevo));        
         
     }
