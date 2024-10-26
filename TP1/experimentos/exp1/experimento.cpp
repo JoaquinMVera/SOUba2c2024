@@ -14,7 +14,7 @@ const string ARCHIVO_LECTURA = "../../data/exp1/data";
 const string EXTENSION_ARCHIVO_LECTURA= "_processed.txt";
 const string ARCHIVO_TESTER = "./promedioTester.txt";
 const string ARCHIVO_SALIDA = "../resultados/resultadoExperimento1.txt";
-const int cantArchivos = 5;
+const int cant_archivos = 5;
 
 //La funcion para agarrar el promedio paralelo que calculamos y que coincida con el promedio real
 void testearPromedio(const float& promedioParalelo, HashMapConcurrente& hashmap) {
@@ -32,7 +32,7 @@ double realizarExperimentosConCantThreads(int threads) {
 
     HashMapConcurrente hashmap;
 
-    for(int i = 1; i <= cantArchivos; i++) {
+    for(int i = 1; i <= cant_archivos; i++) {
         string archivoParaAbrir = ARCHIVO_LECTURA + to_string(i)+ EXTENSION_ARCHIVO_LECTURA;
         archivos.push_back(archivoParaAbrir);
     }
