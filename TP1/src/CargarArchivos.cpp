@@ -28,7 +28,8 @@ int cargarArchivo(
     }
     //Este while fue modificado por problemas parseando
     while (getline(file, palabraActual)) {
-        //lo meto en el hashmap y gg
+        //lo meto en el hashmap y listo, no hay que tener en cuenta mas nada
+        //porque es concurrente
         hashMap.incrementar(palabraActual);
         cant++;
     }
@@ -44,10 +45,10 @@ int cargarArchivo(
 
 
 void cargaThread(
-    atomic<int> &archivoActual,vector<string> &filePaths,HashMapConcurrente &hashMap
+    atomic<int> &archivo_actual,vector<string> &filePaths,HashMapConcurrente &hashMap
 
 ) {
-        for (int index = archivoActual.fetch_add(1); index < filePaths.size(); index = archivoActual.fetch_add(1)) {
+        for (int index = archivo_actual.fetch_add(1); index < filePaths.size(); index = archivo_actual.fetch_add(1)) {
             cargarArchivo(hashMap, filePaths[index]);
         }
 
@@ -55,7 +56,7 @@ void cargaThread(
 
 void cargarMultiplesArchivos(
     HashMapConcurrente &hashMap,
-    unsigned int cantThreads,
+    unsigned int cant_threads,
     std::vector<std::string> filePaths
 ) {
     //tenemos los archivos
@@ -65,7 +66,7 @@ void cargarMultiplesArchivos(
     vector<thread> threads;
     atomic<int> archivo_actual(0);
 
-    for (int i = 0; i < cantThreads;i++) {
+    for (int i = 0; i < cant_threads;i++) {
         threads.emplace_back(cargaThread, ref(archivo_actual), ref(filePaths),ref(hashMap));
     }
 
