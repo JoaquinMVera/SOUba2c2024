@@ -6,6 +6,8 @@
 #include <cstring>
 #include <iostream>
 #include <cstdlib>
+#include <algorithm> // Para std::min
+
 
 Ext2FS::Ext2FS(HDD & disk, unsigned char pnumber) : _hdd(disk), _partition_number(pnumber)
 {
@@ -278,15 +280,131 @@ unsigned int Ext2FS::blockaddr2sector(unsigned int block)
  */
 struct Ext2FSInode * Ext2FS::load_inode(unsigned int inode_number)
 {
-	//TODO: Ejercicio 1
+	//Traigo el supebloque
+	Ext2FSSuperblock* super = superblock();
 
+
+	//calculo cual blockgrup le corresponde
+	unsigned int block_group_index = blockgroup_for_inode(inode_number);
+
+
+	//cargo el block group
+	Ext2FSBlockGroupDescriptor* block_group_descriptor = block_group(block_group_index);
+
+
+	//calculo el block size (magia)
+	unsigned int block_size = 1024 << super->log_block_size;
+
+
+	//index dentro de la tabla de inodos , se hacehaciedo el modulo
+	unsigned int inode_table_index = blockgroup_inode_index(inode_number);
+
+
+	//el tamaño del bloque /el tamaño de los inodos, nos dice cuantos inodos en bloque ADENTRO DE LA INDEX TABLE
+	unsigned int inodes_per_block = block_size / super->inode_size;
+
+	//calculo el offset, otra magia, usando el index / la cantidad de inodos en un BLOQUE ADENTRO DE LA INDEX TABLE
+	unsigned int offset = inode_table_index / inodes_per_block;
+
+
+
+	//me armo un buffer para traer el bloque entero
+	unsigned char * buffer = (unsigned char *) malloc(block_size);
+
+
+	//Leo la table + el offset,asi me traigo el bloque que tiene mielemento
+	read_block(block_group_descriptor->inode_table + offset, buffer);
+
+	//inicializo memoria de manera tal que tenga dodne guardarme elinodo
+	Ext2FSInode* inode = (Ext2FSInode*) malloc(sizeof(Ext2FSInode));
+
+	// aca calculoel indice dentro del bloque, que por alguna razon magica, coincide con el index % inodes per block
+	unsigned int inode_table_index_block_offset = inode_table_index % inodes_per_block;
+
+	//hago una copia de memroia desde el offset, asi dentro del block me traigo justo el inodoque espero
+	//Esto lo puedo hacer porque tengo un inodo de tamaño fijo
+	std::memcpy(inode,(buffer + inode_table_index_block_offset * sizeof(Ext2FSInode)),sizeof(Ext2FSInode));
+
+	return inode;
 }
 
 unsigned int Ext2FS::get_block_address(struct Ext2FSInode * inode, unsigned int block_number)
 {
+	//tamaño del bloque
+	unsigned int block_size = 1024 << _superblock->log_block_size;
 
-	//TODO: Ejercicio 2
+	//cantidad de punteros por bloque
+	unsigned int addresses_per_block = block_size / sizeof(uint);
 
+	if(block_number < 12) {
+		return inode->block[block_number];
+	}
+
+	block_number-=12;
+	//
+	if (block_number <= addresses_per_block) {
+	//soy el primer indirecto
+	//me armo un buffer para traer el bloque entero
+		unsigned char * buffer = (unsigned char *) malloc(block_size);
+		//leo el bloque
+		read_block(inode->block[12], buffer);
+		//interpreto el bloque como un vector de uints
+		uint * bloque_de_punteros = (uint *) buffer;
+
+		uint addr = 0;
+
+        // copiamos desde el buffer + block_numer el valor del adresss, creo que con bloque_de_punteros[block_number] funca?
+        memcpy(&addr, buffer + block_number * sizeof(uint), sizeof(uint));
+
+		return addr;
+	}
+	//volvemos a restar, porque significa que estamos en el segundo indirecto (minimo)
+	//el bloque al que apunta es un bloque de block adress, que apuntan a otras block adress
+	//basicamente tengo en cada adress, addresses_per_block veces de punteros
+	//asi que si el block_number esta en el segundo indirecto, es < addresses_per_block * addresses_per_block
+	block_number -=addresses_per_block;
+	//std::cout << "Hasta cuando llega el segundo indirecto: " << addresses_per_block * addresses_per_block << std::endl;
+	if(block_number < addresses_per_block * addresses_per_block) {
+		//como antes, preparo un buffer para el bloque entero
+
+		unsigned char * buffer = (unsigned char *) malloc(block_size);
+		//traigo el bloque del segundo indirecto, que es el de doble indireccion no? el dibujito esta distinto
+		read_block(inode->block[13], buffer);
+		//aca podemos hacer algo a lo load inode no?
+		//para saber el indice, es el numero del bloque / la cantidad de adresses por bloque
+		//ponele que el numero sea 4, / 10 = 0 ok, 11 / 10 = 1 OK, 24 / 10, 2 OK division entera
+
+		uint indice_tabla_de_tablas = block_number / addresses_per_block;
+
+		uint adress_tabla_de_tablas = 0;
+		memcpy(&adress_tabla_de_tablas, buffer + indice_tabla_de_tablas * sizeof(uint), sizeof(uint));
+
+		//aca ya medio que ganamos, porque ya estamos en la tabla final, la que tiene adress a bloques o cosas
+		//de verdad, es copiar y pegar lo de arriba
+
+		unsigned char * bufferInterno = (unsigned char *) malloc(block_size);
+		//leo el bloque
+		read_block(adress_tabla_de_tablas, bufferInterno);
+		//interpreto el bloque como un vector de uints
+		uint * bloque_de_punteros = (uint *) bufferInterno;
+
+		uint addr = 0;
+		//porque esto funciona? lo mismo que en load_inode
+		unsigned int adress_en_la_tabla = block_number % addresses_per_block;
+
+
+        // copiamos desde el bufferInterno + el adress en la tabla, creo que con bloque_de_punteros[block_number] funca?
+        memcpy(&addr, bufferInterno + adress_en_la_tabla * sizeof(uint), sizeof(uint));
+
+		return addr;
+
+		//TODO: preguntar, porque funciona asi?
+		//que el numero / la cantidad de nodos/adress por bloque te da el indice en la tabla de arriba
+		//y despues el numero % ese mismo divisor te da el indice adentro del bloque de la tabla
+
+	}
+
+	return 0;
 }
 
 void Ext2FS::read_block(unsigned int block_address, unsigned char * buffer)
@@ -303,10 +421,116 @@ struct Ext2FSInode * Ext2FS::get_file_inode_from_dir_inode(struct Ext2FSInode * 
 		from = load_inode(EXT2_RDIR_INODE_NUMBER);
 	//std::cerr << *from << std::endl;
 	assert(INODE_ISDIR(from));
+	
+	//calculamos por enesima vez el tamaño del bloque, no es un global?
+	unsigned int block_size = 1024 << _superblock->log_block_size;
+	//preparo un buffer para trarme un bloque
+	unsigned char * buffer = (unsigned char *) malloc(block_size*2);
 
-	//TODO: Ejercicio 3
+	unsigned int cant_bloques = from->size / block_size; 
+	unsigned int offset_dentro_del_bloque = 0;
+	
+//itero sobre todos los bloques del inodo
+for (unsigned int i = 0; i < cant_bloques; i++) {
+		//obtengo la adress del bloque i-esimo
+		unsigned int block_address = get_block_address(from, i);
+		unsigned int block_address2 = get_block_address(from,i+1);
+		//lo cargo al buffer
+		read_block(block_address, buffer);
+		read_block(block_address2, buffer + block_size);
+	
+
+
+	//hay que ir "iterando" adentrod el bloque. porque no tenemos idea de cuantos hay
+    while (offset_dentro_del_bloque < block_size) {
+		//leo la dirEntry dentro del buffer
+        Ext2FSDirEntry * dirEntryActual = (Ext2FSDirEntry*) (buffer + offset_dentro_del_bloque);
+
+       //aca, una vez actualizado todo y toda la perorata, quiero ver que el nombre sea el
+
+	   unsigned int largo_nombre = strlen(filename);
+	   unsigned int largo_nombre2 = dirEntryActual->name_length;
+
+	   unsigned int minimal = std::min(largo_nombre, largo_nombre2);
+		
+        if (largo_nombre2 == largo_nombre && !strncmp(filename, dirEntryActual->name, largo_nombre)) {
+			//comparacion con el tamaño de la entrada actual? o 
+			unsigned int inodoActual = dirEntryActual->inode;
+            free(buffer);
+            return load_inode(inodoActual);
+        }
+
+        // le sumo lo que ocupa esta dirEntry
+        offset_dentro_del_bloque += dirEntryActual->record_length;
+    }
+	offset_dentro_del_bloque -= block_size;
 
 }
+
+	//podemos llegar aca? retorno null eso esta bien si no existe?
+	return NULL;
+
+}
+
+/*
+struct Ext2FSInode * Ext2FS::get_file_inode_from_dir_inode(struct Ext2FSInode * from, const char * filename)
+{
+	if(from == NULL)
+		from = load_inode(EXT2_RDIR_INODE_NUMBER);
+	//std::cerr << *from << std::endl;
+	assert(INODE_ISDIR(from));
+	
+	//calculamos por enesima vez el tamaño del bloque, no es un global?
+	unsigned int block_size = 1024 << _superblock->log_block_size;
+	//preparo un buffer para trarme un bloque
+	unsigned char * buffer = (unsigned char *) malloc(block_size*2);
+
+	unsigned int cant_bloques = from->size / block_size; 
+	unsigned int offset_dentro_del_bloque = 0;
+	
+//itero sobre todos los bloques del inodo
+for (unsigned int i = 0; i < cant_bloques; i++) {
+		//obtengo la adress del bloque i-esimo
+		unsigned int block_address = get_block_address(from, i);
+		unsigned int block_address2 = get_block_address(from,i+1);
+		//lo cargo al buffer
+		read_block(block_address, buffer);
+		read_block(block_address2, buffer + block_size);
+	
+
+
+	//hay que ir "iterando" adentrod el bloque. porque no tenemos idea de cuantos hay
+    while (offset_dentro_del_bloque < block_size) {
+		//leo la dirEntry dentro del buffer
+        Ext2FSDirEntry * dirEntryActual = (Ext2FSDirEntry*) (buffer + offset_dentro_del_bloque);
+
+       //aca, una vez actualizado todo y toda la perorata, quiero ver que el nombre sea el
+
+	   unsigned int largo_nombre = strlen(filename);
+	   unsigned int largo_nombre2 = dirEntryActual->name_length;
+
+	   unsigned int minimal = std::min(largo_nombre, largo_nombre2);
+		
+        if (largo_nombre2 == largo_nombre && !strncmp(filename, dirEntryActual->name, largo_nombre)) {
+			//comparacion con el tamaño de la entrada actual? o 
+			unsigned int inodoActual = dirEntryActual->inode;
+            free(buffer);
+            return load_inode(inodoActual);
+        }
+
+        // le sumo lo que ocupa esta dirEntry
+        offset_dentro_del_bloque += dirEntryActual->record_length;
+    }
+	offset_dentro_del_bloque -= block_size;
+
+}
+
+	//podemos llegar aca? retorno null eso esta bien si no existe?
+	return NULL;
+
+}
+
+*/
 
 fd_t Ext2FS::get_free_fd()
 {
